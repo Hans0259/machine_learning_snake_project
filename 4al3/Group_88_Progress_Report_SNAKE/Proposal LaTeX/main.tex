@@ -1,0 +1,189 @@
+\documentclass[11pt]{article}
+
+% Change "review" to "final" to generate the final (sometimes called camera-ready) version.
+% Change to "preprint" to generate a non-anonymous version with page numbers.
+\usepackage[]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+
+% If the title and author information does not fit in the area allocated, uncomment the following
+%
+%\setlength\titlebox{<dim>}
+%
+% and set <dim> to something 5cm or larger.
+
+\title{Group 88 Progress Report:\\"SNAKE"}
+
+
+\author{Weichen Hou, Zihe Shi \\
+  \texttt{\{houw10,shiz40\}@mcmaster.ca} }
+
+%\author{
+%  \textbf{First Author\textsuperscript{1}},
+%  \textbf{Second Author\textsuperscript{1,2}},
+%  \textbf{Third T. Author\textsuperscript{1}},
+%  \textbf{Fourth Author\textsuperscript{1}},
+%\\
+%  \textbf{Fifth Author\textsuperscript{1,2}},
+%  \textbf{Sixth Author\textsuperscript{1}},
+%  \textbf{Seventh Author\textsuperscript{1}},
+%  \textbf{Eighth Author \textsuperscript{1,2,3,4}},
+%\\
+%  \textbf{Ninth Author\textsuperscript{1}},
+%  \textbf{Tenth Author\textsuperscript{1}},
+%  \textbf{Eleventh E. Author\textsuperscript{1,2,3,4,5}},
+%  \textbf{Twelfth Author\textsuperscript{1}},
+%\\
+%  \textbf{Thirteenth Author\textsuperscript{3}},
+%  \textbf{Fourteenth F. Author\textsuperscript{2,4}},
+%  \textbf{Fifteenth Author\textsuperscript{1}},
+%  \textbf{Sixteenth Author\textsuperscript{1}},
+%\\
+%  \textbf{Seventeenth S. Author\textsuperscript{4,5}},
+%  \textbf{Eighteenth Author\textsuperscript{3,4}},
+%  \textbf{Nineteenth N. Author\textsuperscript{2,5}},
+%  \textbf{Twentieth Author\textsuperscript{1}}
+%\\
+%\\
+%  \textsuperscript{1}Affiliation 1,
+%  \textsuperscript{2}Affiliation 2,
+%  \textsuperscript{3}Affiliation 3,
+%  \textsuperscript{4}Affiliation 4,
+%  \textsuperscript{5}Affiliation 5
+%\\
+%  \small{
+%    \textbf{Correspondence:} \href{mailto:email@domain}{email@domain}
+%  }
+%}
+
+\begin{document}
+\maketitle
+% \begin{abstract}
+% \end{abstract}
+
+\section{Introduction}
+
+This project aims to develop a reinforcement learning (RL)-based control system for two autonomous agents (snakes) operating within a 2D grid-based game environment. The objective is to enable these agents to learn coordinated behaviors that allow them to navigate efficiently, reach designated targets, and avoid collisions with walls, obstacles, and each other. The environment is implemented using Python and Pygame, providing real-time visualization and dynamic interactions between the agents and their surroundings. The reinforcement learning framework is designed to optimize the decision-making of agents’ through iterative training, where each agent observes its environment, selects an action, and receives feedback in the form of rewards or penalties.
+
+A key focus of the project is the design of an effective reward structure that promotes cooperative behavior between agents. The reward function must balance multiple objectives — encouraging agents to approach the target while penalizing collisions or redundant movements. This requires careful tuning to prevent one agent from dominating the task or causing deadlock situations. To facilitate learning, the project uses state representations that include spatial awareness, directional orientation, and relative positioning of obstacles and targets.
+
+In the current stage, the implementation focuses on a single autonomous snake to establish the foundational reinforcement learning environment, ensure stable training, and verify the consistency of the reward. The single-agent setup serves as a prototype for later expansion into a multi-agent cooperative system, where inter-agent communication and coordination strategies will be introduced. Once the environment and reward mechanisms are fully validated, the next phase will extend the framework to support multi-agent reinforcement learning (MARL), allowing both snakes to learn collaborative and competitive strategies simultaneously.
+
+\section{Related Work}
+
+Many prior efforts have explored applying reinforcement learning (RL) and deep-learning methods to the classic game Snake and related grid-world problems. Early work investigated using convolutional neural networks and Q-learning to learn Snake state-action mapping with reduced state spaces and reward shaping. Later, deep Q-networks (DQN) were applied more directly to Snake with full image-based inputs, demonstrating feasibility but also overfitting and limited generalization.
+
+In the multi-agent domain, frameworks such as the Battlesnake Challenge allow simultaneous snakes competing or cooperating with human-in-the-loop training, presenting additional complexity when compared with our single‐agent setting. No previous research or project addresses exactly our proposed task of multi-agent cooperative Snake. The most closely related is the deep Q-learning single-snake work \citet{9480232} which focuses purely on one agent navigating in isolation. We build on these foundations and extend them with cooperative dynamics, collision avoidance between agents.
+
+\section{Dataset}
+
+%You should write about your dataset here, following the guidelines regarding item 1. This section may be 0.5-1 pages. Depending on your specific data set, you may want to include subsections for preprocessing, annotation, etc.
+
+In this project, the data used for training and evaluation are not pre-collected static samples but are instead dynamically generated from the Snake game environment. Each episode of the game produces a sequence of state–action–reward–next state tuples that form the experience dataset used by the reinforcement learning (RL) agent. This dataset evolves continually as the agent interacts with the environment, learns from exploration, and updates its Q-values.
+
+\subsection{Environment Representation}
+
+The Snake environment is represented as a two-dimensional grid where each cell corresponds to a pixel or discrete coordinate $(x, y)$. At every time step, the agent receives a state observation encoding the snake’s body position, food location, and movement direction.
+
+\subsection{State Representation}
+
+The state vector encodes the current environment information perceived by the Snake agent at each time step. It consists of three main categories of binary features: danger indicators, direction indicators, and food (point) indicators. The first twelve variables capture potential collision risks in different directions. The terms \texttt{danger\_lb\_r}, \texttt{danger\_lb\_l}, \texttt{danger\_lb\_u}, and \texttt{danger\_lb\_d} represent immediate one-step dangers (such as walls or the snake's body) in the right, left, upward, and downward directions, respectively. Similarly, \texttt{danger\_lw\_*} variables denote long-range dangers detected several cells ahead, providing early awareness of obstacles, while \texttt{danger\_b\_*} variables specifically identify whether the snake's own body is adjacent in a given direction. The next four variables, \texttt{dir\_l}, \texttt{dir\_r}, \texttt{dir\_u}, and \texttt{dir\_d}, form a one-hot encoding of the snake's current movement direction. Finally, the last four variables, \texttt{point\_l}, \texttt{point\_r}, \texttt{point\_u}, and \texttt{point\_d}, indicate the relative position of the food with respect to the snake's head, where each variable equals one if the food lies in that direction. Together, these twenty binary features provide a compact yet informative state representation that allows the reinforcement learning model to reason about obstacles, orientation, and food location when making movement decisions.
+
+
+\subsection{Preprocessing and Normalization}
+
+Before training, all state matrices are flattened and normalized to values in the range $[0, 1]$. Each experience batch is randomly sampled from the buffer to break temporal correlations between consecutive states. The target Q-values are computed using the Bellman equation, and the dataset is iteratively updated after each gradient step, forming a self-reinforcing learning process.
+
+
+\section{Features}
+
+Describe any features you used for your model, or how your data was input to your model. Are you doing feature engineering or feature selection? Are you learning embeddings? Is it all part of one neural network? Refer to item 2. This may range from 0.25 pages to 0.5 pages.
+
+\section{Implementation}
+
+Describe your model and implementation here. Refer to item 4. This may take around a page.
+
+\section{Results and Evaluation}
+
+How are you evaluating your model? What results do you have so far? What are your baselines? Refer to item 5. This may take around 0.5 pages.
+
+\section{Feedback and Plans}
+
+%Write about your plans for the remainder of the project. This should include a discussion of the feedback you received from your TA, and how you plan to improve your approach. Reflect on your implementation and areas for improvement. Refer to item 6. This may be around 0.5 pages.
+
+\subsection{Extension to Multi-Agent Scenarios}
+
+For multi-agent experiments, the dataset is expanded to include additional states representing the positions and actions of other snakes. Each transition includes joint or independent rewards for cooperative and competitive settings. This allows the model to learn both individual survival strategies and team-based coordination patterns, forming the foundation for multi-agent reinforcement learning (MARL) experiments.
+
+\section{Equations}
+
+\subsection{Q-Learning Update Rule}
+\begin{equation}
+\small
+Q(s_t,a_t) \leftarrow Q(s_t,a_t) + \alpha\!\left[r_t + \gamma \max_{a'} Q(s_{t+1},a') - Q(s_t,a_t)\right]
+\label{eq:qupdate}
+\end{equation}
+
+\subsection{Bellman Optimality Equation}
+\begin{equation}
+\small
+Q^*(s,a) \;=\; \mathbb{E}_{s'}\!\left[\, r + \gamma \max_{a'} Q^*(s',a') \,\big|\, s,a \right]
+\label{eq:bellman}
+\end{equation}
+
+In the DQN process, this two logic appear conceptually in the target calculation step.
+
+\subsection{Deep Q-Network (DQN) Loss Function}
+\begin{align}
+\small
+L(\theta) &= \mathbb{E}_{(s,a,r,s')\sim\mathcal{D}}
+\Big[
+\big(
+r + \gamma \max_{a'} Q(s',a';\theta^{-}) \nonumber\\[-2pt]
+&\qquad\qquad\qquad\; -\, Q(s,a;\theta)
+\big)^{2}
+\Big]
+\label{eq:dqnloss}
+\end{align}
+
+In this project, the loss function measures how close the Q-network's predictions are to the target values given by the Bellman equation. The target value is calculated as $y_t = r + \gamma \max_{a'} Q(s', a'; \theta^{-})$, where $\theta^{-}$ are the weights of the target network. The Q-network with parameters $\theta$ predicts $Q(s, a; \theta)$ for the current state and action. The loss is the squared difference between the target and the prediction: $L(\theta) = (y_t - Q(s, a; \theta))^2$. In the code, this is implemented using PyTorch’s mean squared error loss (\texttt{torch.nn.MSELoss}), and the optimizer updates the network weights to make future predictions closer to the target values. This helps the agent learn better actions over time.
+
+
+\nocite{9480232,8460004, shao2019surveydeepreinforcementlearning, 9315441, 6032006}
+
+
+% \section*{Limitations}
+
+\section*{Team Contributions}
+
+Write in this section a few sentences describing the contributions of each team member. What did each member work on? Refer to item 7.
+
+% Bibliography entries for the entire Anthology, followed by custom entries
+%\bibliography{custom,anthology-overleaf-1,anthology-overleaf-2}
+
+% Custom bibliography entries only
+\bibliography{custom}
+
+% \appendix
+
+% \section{Example Appendix}
+% \label{sec:appendix}
+
+% This is an appendix.
+
+\end{document}
