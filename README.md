@@ -1,2 +1,1 @@
-# 4AL3_machine_learning
-mcmaster machine learning course level 4
+This project implements a Deep Q-Learning agent that learns to play the classic Snake game. 
